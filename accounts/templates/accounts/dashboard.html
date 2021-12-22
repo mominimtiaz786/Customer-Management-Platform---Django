@@ -14,8 +14,15 @@
 				<tr>
 					<th></th>
 					<th>Customer</th>
-					<th>Orders</th>
+					<th>Phone</th>
 				</tr>
+				{% for cust in customers %}
+				<tr>
+					<td></td>
+					<td>{{cust.name}}</td>
+					<td>{{cust.phone}}</td>
+				</tr>
+				{% endfor %}
 
 			</table>
 		</div>
@@ -34,7 +41,16 @@
 					<th>Update</th>
 					<th>Remove</th>
 				</tr>
-		
+
+				{% for order in orders %}
+				<tr>
+					<td>{{order.product}}</td>
+					<td>{{order.date}}</td>
+					<td>{{order.status}}</td>
+					<td><a href="#">Update</a></td>
+					<td><a href="#">Delete</a></td>
+				</tr>
+				{% endfor %}
 			</table>
 		</div>
 	</div>
