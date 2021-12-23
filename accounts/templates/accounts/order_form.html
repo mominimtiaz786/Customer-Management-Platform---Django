@@ -4,7 +4,12 @@
 {% block content %}
 <form action="" method="POST">
     {% csrf_token %}
+    {{formset.management_form}}
+    {% for form in formset %}
+    <hr>
     {{form}}
+    
+    {% endfor %}
     <input type="submit" name="Submit">
 </form>
 
