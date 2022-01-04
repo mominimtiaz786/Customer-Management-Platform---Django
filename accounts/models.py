@@ -44,6 +44,7 @@ class Order(models.Model):
     )
     status = models.CharField(max_length=200, null=True, choices=STATUSES)
     date = models.DateField(auto_now_add=True, null=True)
+    description = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         return str(self.id) + " ----- "+self.customer.name + " -----> ordered -----> " + self.product.name

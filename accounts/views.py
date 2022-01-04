@@ -1,9 +1,8 @@
 from django.forms.models import inlineformset_factory
 from django.shortcuts import redirect, render
-from django.http import HttpResponse
 from .models import *
 from .forms import OrderForm
-from django.forms import inlineformset_factory
+from .filters import OrderFilter
 # Create your views here.
 
 def home(request):
@@ -14,7 +13,7 @@ def home(request):
     orders_delievered = orders.filter(status="Delieverd").count()
     orders_pending = orders.filter(status="Pending").count()
 
-    context = {'orders':orders.order_by('-id'),#[:5],
+    context = {'orders':orders.order_by('-id')[:5],
     'customers':customers,'total_orders':total_orders, 'orders_delievered':orders_delievered, 'orders_pending':orders_pending}
     return render(request,'accounts/dashboard.html', context)
 
@@ -26,7 +25,11 @@ def product(request):
 def customer(request,id):
     customer = Customer.objects.get(id=id)
     customer_orders = customer.order_set.all()
-    context = {'customer_orders':customer_orders, 'customer':customer, 'order_count':customer_orders.count()}
+
+    order_filter = OrderFilter(request.GET, queryset= customer_orders)
+    customer_orders = order_filter.qs
+
+    context = {'customer_orders':customer_orders, 'order_filter':order_filter,'customer':customer, 'order_count':customer_orders.count()}
     return render(request,'accounts/customer.html', context)
 
 def createOrder(request, id):
