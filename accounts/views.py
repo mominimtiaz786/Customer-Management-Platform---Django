@@ -26,12 +26,14 @@ def home(request):
     return render(request,'accounts/dashboard.html', context)
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def product(request):
     all_products = Product.objects.all()
     context = {'products':all_products}
     return render(request,'accounts/products.html',context)
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def customer(request,id):
     customer = Customer.objects.get(id=id)
     customer_orders = customer.order_set.all()
@@ -43,6 +45,7 @@ def customer(request,id):
     return render(request,'accounts/customer.html', context)
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def createOrder(request, id):
     customer = Customer.objects.get(id=id)
     #form = OrderForm(initial={'customer':customer})
@@ -58,6 +61,7 @@ def createOrder(request, id):
     return render(request,'accounts/order_form.html',context)
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def updateOrder(request,id):
     order = Order.objects.get(id=id)
     form = OrderForm(instance=order)
@@ -70,6 +74,7 @@ def updateOrder(request,id):
     return render(request,'accounts/order_form.html',context)
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def deleteOrder(request, id):
     order = Order.objects.get(id=id)
     form = OrderForm(instance=order)
@@ -117,6 +122,16 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['customer'])
 def userPage(request):
-    context = {}
+    orders = request.user.customer.order_set.all()
+    
+    total_orders = orders.count()
+    orders_delievered = orders.filter(status="Delieverd").count()
+    orders_pending = orders.filter(status="Pending").count()
+
+    context = {'orders':orders.order_by('-id'),
+    'total_orders':total_orders, 'orders_delievered':orders_delievered, 'orders_pending':orders_pending}
+
     return render(request,'accounts/user_page.html',context)

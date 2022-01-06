@@ -31,7 +31,7 @@ def admin_only(view_func):
         group = None
         if request.user.groups.exists():
             group = request.user.groups.all()[0].name
-            print("\n\nHello-->",group)
+            
         if group == 'admin':
             return view_func(request, *args, **kwargs)
         elif group == 'customer':
