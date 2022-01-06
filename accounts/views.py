@@ -3,13 +3,16 @@ from django.shortcuts import redirect, render
 from .models import *
 from .forms import OrderForm, CreateUserForm
 from .filters import OrderFilter
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from .decorators import unauthenticated_user, admin_only, allowed_users
 
 # Create your views here.
+
 @login_required(login_url='login')
+@admin_only
 def home(request):
     orders = Order.objects.all()
     customers = Customer.objects.all()
@@ -76,41 +79,44 @@ def deleteOrder(request, id):
 
     return render(request,'accounts/delete_order.html',{'order':order})
 
+@unauthenticated_user
 def registerPage(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    else:
-        form = CreateUserForm()
+    form = CreateUserForm()
 
-        if request.method == 'POST':
-            form = CreateUserForm(request.POST)
-            if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
-                messages.success(request,"Account was created successfully for "+ user)
-                return redirect('login')
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            group = Group.objects.get(name='customer')
+            user.groups.add(group)
 
-        context = {'form':form}
-        return render(request, 'accounts/register.html',context)
+            username = form.cleaned_data.get('username')
+            messages.success(request,"Account was created successfully for "+ username)
+            return redirect('login')
 
+    context = {'form':form}
+    return render(request, 'accounts/register.html',context)
+
+@unauthenticated_user
 def loginPage(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    else:
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request,user)
-                return redirect('home')
-            else:
-                messages.info(request,'incorrect username or password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('home')
+        else:
+            messages.info(request,'incorrect username or password')
 
-        context = {}
-        return render(request, 'accounts/login.html',context)
+    context = {}
+    return render(request, 'accounts/login.html',context)
 
 def logoutUser(request):
     logout(request)
     return redirect('login')
+
+def userPage(request):
+    context = {}
+    return render(request,'accounts/user_page.html',context)
