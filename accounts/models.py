@@ -5,12 +5,13 @@ from django.db.models.deletion import CASCADE, SET_NULL
 # Create your models here.
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=CASCADE)
+    user = models.OneToOneField(User, null=True, on_delete=CASCADE, blank=True)
     name = models.CharField(max_length=200, null=True)
     phone = models.CharField(max_length=200, null=True)
     email = models.EmailField(max_length=200, null=True)
     date = models.DateField(auto_now_add=True, null=True)
-
+    profile_pic = models.ImageField(default='avatar.jpg', null=True, blank=True)
+    
     def __str__(self):
         return self.name
 

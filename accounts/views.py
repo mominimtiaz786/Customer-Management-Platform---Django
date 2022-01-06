@@ -1,13 +1,14 @@
 from django.forms.models import inlineformset_factory
 from django.shortcuts import redirect, render
 from .models import *
-from .forms import OrderForm, CreateUserForm
+from .forms import OrderForm, CreateUserForm, CustomerForm
 from .filters import OrderFilter
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user, admin_only, allowed_users
+
 
 # Create your views here.
 
@@ -96,6 +97,8 @@ def registerPage(request):
             user.groups.add(group)
 
             username = form.cleaned_data.get('username')
+            customer = Customer.objects.create(user=user,email = user.email)
+            customer.save()
             messages.success(request,"Account was created successfully for "+ username)
             return redirect('login')
 
@@ -135,3 +138,18 @@ def userPage(request):
     'total_orders':total_orders, 'orders_delievered':orders_delievered, 'orders_pending':orders_pending}
 
     return render(request,'accounts/user_page.html',context)
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['customer'])
+def accountSettings(request):
+    customer = request.user.customer
+    form = CustomerForm(instance=customer)
+    
+    if request.method == "POST":
+        form = CustomerForm(request.POST, request.FILES, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('user-page')
+
+    context = {'form':form,}
+    return render(request,'accounts/account_settings.html',context)
