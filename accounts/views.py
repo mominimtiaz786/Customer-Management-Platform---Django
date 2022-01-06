@@ -5,7 +5,7 @@ from .forms import OrderForm, CreateUserForm, CustomerForm
 from .filters import OrderFilter
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Group
+
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user, admin_only, allowed_users
 
@@ -93,12 +93,8 @@ def registerPage(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            group = Group.objects.get(name='customer')
-            user.groups.add(group)
 
             username = form.cleaned_data.get('username')
-            customer = Customer.objects.create(user=user,email = user.email)
-            customer.save()
             messages.success(request,"Account was created successfully for "+ username)
             return redirect('login')
 
