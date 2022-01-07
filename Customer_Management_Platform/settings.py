@@ -133,3 +133,13 @@ MEDIA_ROOT = os_path.join(BASE_DIR,'static/images/uploads')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#SMPT Configuration
+
+from .credentials import *
+EMAIL_BACKEND = EmailCredentials.EMAIL_BACKEND
+EMAIL_HOST = EmailCredentials.EMAIL_HOST
+EMAIL_PORT = EmailCredentials.EMAIL_PORT
+EMAIL_USE_TLS = EmailCredentials.EMAIL_USE_TLS
+EMAIL_HOST_USER = EmailCredentials.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EmailCredentials.EMAIL_HOST_PASSWORD

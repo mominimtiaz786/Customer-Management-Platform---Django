@@ -24,14 +24,17 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'products' %}">Products</a>
         </li>
-        {% else %}
+        {% elif request.user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'account-settings' %}">Settings</a>
         </li>
+
         {% endif %}
       </ul>
       
     </div>
     <span class="hello-message">Hello, {{request.user}}</span>
+    {% if request.user.is_authenticated %}
     <span><a class="hello-message" href="{% url 'logout' %}">logout</a></span>
+    {% endif %}
   </nav>
