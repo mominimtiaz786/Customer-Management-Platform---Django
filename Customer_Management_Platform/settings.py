@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'accounts.apps.AccountsConfig',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -105,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Karachi'
 
 USE_I18N = True
 
@@ -115,9 +118,28 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+from os import path as os_path
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/images/'
+
+STATICFILES_DIRS = [
+    os_path.join(BASE_DIR, 'static')
+]
+
+MEDIA_ROOT = os_path.join(BASE_DIR,'static/images/uploads')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#SMPT Configuration
+
+from .credentials import *
+EMAIL_BACKEND = EmailCredentials.EMAIL_BACKEND
+EMAIL_HOST = EmailCredentials.EMAIL_HOST
+EMAIL_PORT = EmailCredentials.EMAIL_PORT
+EMAIL_USE_TLS = EmailCredentials.EMAIL_USE_TLS
+EMAIL_HOST_USER = EmailCredentials.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EmailCredentials.EMAIL_HOST_PASSWORD
